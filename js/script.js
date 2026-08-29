@@ -132,7 +132,7 @@ function makeKeyActivatable(id, handler){
   });
 }
 
-
+/* ---------------- RSVP: envío manual a Formspree vía fetch ---------------- */
 const rsvpButtons = document.querySelectorAll('.rsvp-btn');
 let asistenciaElegida = null;
 
@@ -153,22 +153,64 @@ rsvpButtons.forEach(btn=>{
   });
 });
 
-if(window.formspree){
-  window.formspree('initForm', {
-    formElement: '#rsvpForm',
-    formId: 'xvkoojdo'
-  });
-}
-
 const rsvpForm = document.getElementById('rsvpForm');
 if(rsvpForm){
-  rsvpForm.addEventListener('submit', (e)=>{
+  rsvpForm.addEventListener('submit', async (e)=>{
+    e.preventDefault(); // SIEMPRE se detiene el envío nativo del navegador
+
+    const errorDiv = document.getElementById('fs-error');
+    const successDiv = document.getElementById('fs-success');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if(errorDiv){ errorDiv.style.display = 'none'; errorDiv.textContent = ''; }
+    if(successDiv) successDiv.style.display = 'none';
+
     if(!asistenciaElegida){
-      e.preventDefault();
-      const errorDiv = document.getElementById('fs-error');
       if(errorDiv){
         errorDiv.style.display = 'block';
         errorDiv.textContent = 'Por favor indica si asistirás o no.';
+      }
+      return;
+    }
+
+    const formData = new FormData(rsvpForm);
+
+    if(submitBtn){
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+    }
+
+    try {
+      const response = await fetch(rsvpForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if(response.ok){
+        if(successDiv) successDiv.style.display = 'block';
+        rsvpForm.reset();
+        rsvpButtons.forEach(b=>b.classList.remove('selected'));
+        asistenciaElegida = null;
+      } else {
+        const data = await response.json().catch(()=>null);
+        const message = (data && data.errors && data.errors.length)
+          ? data.errors.map(err => err.message).join(', ')
+          : 'Ocurrió un error al enviar. Intenta de nuevo.';
+        if(errorDiv){
+          errorDiv.style.display = 'block';
+          errorDiv.textContent = message;
+        }
+      }
+    } catch (err) {
+      if(errorDiv){
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'No se pudo conectar. Revisa tu internet e intenta de nuevo.';
+      }
+    } finally {
+      if(submitBtn){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar confirmación';
       }
     }
   });
@@ -346,5 +388,3 @@ if (audio && musicFab) {
     updateMusicFab();
   }, 250);
 }
-
-

@@ -92,8 +92,6 @@ def render_public_page() -> str:
     </div>
   </section>
 
-
-
   <section id="compromiso">
     <div class="section-head">
       <div class="eyebrow">Un nuevo capítulo comienza</div>
@@ -266,7 +264,7 @@ def render_public_page() -> str:
       <div id="fs-success" class="msg ok" style="display:none; margin-bottom:20px;">¡Gracias por confirmar! Te esperamos con mucha ilusión.</div>
       <div id="fs-error" class="msg err" style="display:none; margin-bottom:20px;"></div>
 
-      <form id="rsvpForm" data-fs-form>
+      <form id="rsvpForm" data-fs-form action="https://formspree.io/f/xvkoojdo" method="POST">
         <div class="field">
           <label for="nombre">Tu nombre completo</label>
           <input type="text" id="nombre" name="Nombre" placeholder="Nombre y apellido" required data-fs-field />
