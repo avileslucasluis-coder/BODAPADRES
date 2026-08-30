@@ -387,7 +387,7 @@ class handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
 
-        if path == "/organizador":
+        if path == "/organizador" or "route=organizador" in (parsed.query or ""):
             content = render_organizer_page().encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
