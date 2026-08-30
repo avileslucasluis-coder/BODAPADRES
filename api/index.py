@@ -387,14 +387,6 @@ class handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
 
-        if path in ("", "/"):
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(render_public_page().encode("utf-8"))))
-            self.end_headers()
-            self.wfile.write(render_public_page().encode("utf-8"))
-            return
-
         if path == "/organizador":
             content = render_organizer_page().encode("utf-8")
             self.send_response(200)
@@ -404,15 +396,26 @@ class handler(SimpleHTTPRequestHandler):
             self.wfile.write(content)
             return
 
+        # Si la ruta apunta a un archivo estático real (css/js/images/audio), lo servimos
         static_path = (ROOT / path.lstrip("/")).resolve()
-        if static_path.exists() and ROOT in static_path.parents or static_path == ROOT:
+        if (
+            path.startswith(("/css/", "/js/", "/images/", "/audio/"))
+            and static_path.exists()
+            and ROOT in static_path.parents
+        ):
             try:
                 super().do_GET()
                 return
             except Exception:
                 pass
 
-        self.send_error(404, "Página no encontrada")
+        # Cualquier otra ruta (incluida "/", "/api/index", etc.) muestra la página principal
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(render_public_page().encode("utf-8"))))
+        self.end_headers()
+        self.wfile.write(render_public_page().encode("utf-8"))
+        return
 
     def log_message(self, format: str, *args) -> None:
         return
