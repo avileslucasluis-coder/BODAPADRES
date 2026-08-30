@@ -216,44 +216,29 @@ if(rsvpForm){
   });
 }
 
+/* ---------------- MÚSICA: reproducción continua sin opción de pausa ---------------- */
 const MUSIC_FILE = 'audio/musica-boda.mp3';
 const audio = document.getElementById('weddingAudio');
 const musicFab = document.getElementById('musicFab');
 const musicState = {
-  ready: false,
-  userPaused: false,
-  muted: false,
-  autoplayAttempted: false,
-  userInteracted: false,
-  lastAutoPlay: false
+  ready: false
 };
-
-function getMusicIcon() {
-  if (!musicFab) return '';
-  if (musicState.muted) {
-    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10v4h3l4 3V7l-4 3H5z"/><path d="M17 9l4 6M21 9l-4 6"/></svg>';
-  }
-  if (audio && !audio.paused) {
-    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10v4h3l4 3V7l-4 3H5z"/><path d="M15 9c1.5 1 2.5 2.3 2.5 3.5S16.5 15 15 16"/><path d="M18 6c2.8 1.8 4.5 4.2 4.5 6.5S20.8 16.2 18 18"/></svg>';
-  }
-  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10v4h3l4 3V7l-4 3H5z"/><path d="M16 9l6 6M22 9l-6 6"/></svg>';
-}
 
 function updateMusicFab() {
   if (!musicFab) return;
-  const label = musicState.muted ? 'Silenciado' : (audio && !audio.paused ? 'Reproduciendo' : 'Pausado');
-  musicFab.setAttribute('aria-label', `Música ${label}`);
-  musicFab.title = label;
-  musicFab.classList.toggle('paused', !!(audio && audio.paused) || musicState.muted);
-  musicFab.dataset.state = label.toLowerCase();
-  musicFab.innerHTML = `<span class="music-icon" aria-hidden="true">${getMusicIcon()}</span>`;
+  const reproduciendo = audio && !audio.paused;
+  musicFab.setAttribute('aria-label', reproduciendo ? 'Reproduciendo' : 'Cargando música');
+  musicFab.title = reproduciendo ? 'Reproduciendo' : 'Cargando música';
+  musicFab.classList.toggle('paused', !reproduciendo);
+  musicFab.innerHTML = '<div class="bars"><i></i><i></i><i></i></div>';
 }
 
 async function loadSavedMusic() {
-  if (!audio || !musicFab) return;
+  if (!audio) return;
 
   audio.volume = 0.8;
   audio.preload = 'auto';
+  audio.loop = true;
 
   try {
     const res = await store.get('ambient-music-url', true);
@@ -274,117 +259,39 @@ async function loadSavedMusic() {
   updateMusicFab();
 }
 
-async function playMusicIfAllowed({ force = false, userInitiated = false } = {}) {
-  if (!audio || !musicState.ready) return false;
-  if (musicState.userPaused && !userInitiated && !force) return false;
-  if (musicState.muted && !userInitiated && !force) return false;
-
+async function forzarReproduccion() {
+  if (!audio || !musicState.ready) return;
   try {
-    audio.volume = 0.8;
     audio.muted = false;
-    if (audio.readyState === 0) {
-      audio.load();
+    audio.volume = 0.8;
+    if (audio.paused) {
+      await audio.play();
     }
-    await audio.play();
-    musicState.userPaused = false;
-    musicState.lastAutoPlay = !userInitiated;
     updateMusicFab();
-    return true;
   } catch (error) {
-    musicState.lastAutoPlay = false;
-    updateMusicFab();
-    return false;
+    // El navegador bloqueó el intento; se reintentará con la próxima interacción.
   }
 }
 
-function allowMusicByUserInteraction() {
-  if (!audio || !musicState.ready) return;
-  musicState.userInteracted = true;
-  playMusicIfAllowed({ userInitiated: true });
-}
-
-if (audio && musicFab) {
+if (audio) {
   loadSavedMusic();
 
-  audio.addEventListener('play', () => {
-    musicState.userPaused = false;
-    updateMusicFab();
-  });
-
+  audio.addEventListener('play', updateMusicFab);
   audio.addEventListener('pause', () => {
-    updateMusicFab();
-  });
-
-  audio.addEventListener('volumechange', () => {
-    musicState.muted = audio.muted;
-    updateMusicFab();
+    forzarReproduccion();
   });
 
   audio.addEventListener('error', () => {
     musicState.ready = false;
-    musicFab.classList.add('disabled');
-    musicFab.title = 'No se pudo cargar la música';
-    musicFab.innerHTML = '<span class="music-icon" aria-hidden="true">🔇</span>';
+    if (musicFab) {
+      musicFab.title = 'No se pudo cargar la música';
+      musicFab.innerHTML = '<span class="music-icon" aria-hidden="true">🔇</span>';
+    }
   });
 
-  musicFab.addEventListener('click', async () => {
-    if (!musicState.ready) {
-      musicFab.title = 'Añade la música en la carpeta audio. Ej.: audio/musica-boda.mp3';
-      return;
-    }
-
-    if (!audio.src) {
-      audio.src = MUSIC_FILE;
-      audio.load();
-    }
-
-    if (audio.paused) {
-      musicState.userPaused = false;
-      musicState.muted = false;
-      audio.volume = 0.8;
-      audio.muted = false;
-      await playMusicIfAllowed({ userInitiated: true });
-      return;
-    }
-
-    audio.pause();
-    musicState.userPaused = true;
-    musicState.muted = false;
-    updateMusicFab();
+  ['pointerdown', 'click', 'touchstart', 'keydown'].forEach(evento => {
+    document.addEventListener(evento, forzarReproduccion, { passive: true });
   });
 
-  musicFab.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-    audio.muted = !audio.muted;
-    musicState.muted = audio.muted;
-    if (!audio.muted && !audio.paused) {
-      musicState.userPaused = false;
-      audio.play().catch(() => {});
-    }
-    updateMusicFab();
-  });
-
-  document.addEventListener('pointerdown', () => {
-    if (!musicState.autoplayAttempted && musicState.ready) {
-      musicState.autoplayAttempted = true;
-      playMusicIfAllowed({ userInitiated: false });
-    }
-
-    if (musicState.ready && !musicState.userPaused) {
-      allowMusicByUserInteraction();
-    }
-  }, { passive: true, once: false });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      allowMusicByUserInteraction();
-    }
-  }, { passive: true });
-
-  setTimeout(() => {
-    if (!musicState.userPaused && musicState.ready && !musicState.userInteracted) {
-      playMusicIfAllowed({ userInitiated: false });
-    }
-    updateMusicFab();
-  }, 250);
+  setTimeout(forzarReproduccion, 250);
 }
