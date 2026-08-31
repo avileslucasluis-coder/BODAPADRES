@@ -2,6 +2,16 @@
 const params = new URLSearchParams(window.location.search);
 const invitadoNombre = params.get('invitado');
 
+const welcomeGate = document.getElementById('welcomeGate');
+if(welcomeGate){
+  document.body.style.overflow = 'hidden';
+  welcomeGate.addEventListener('click', () => {
+    welcomeGate.classList.add('wg-hidden');
+    document.body.style.overflow = '';
+    forzarReproduccion();
+  }, { once:true });
+}
+
 function activarEntradaHero(){
   document.querySelectorAll('.hero-in').forEach(el=>el.classList.add('hero-in-active'));
 }

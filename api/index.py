@@ -26,6 +26,13 @@ def render_public_page() -> str:
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
+  <div id="welcomeGate">
+    <div class="wg-content">
+      <div class="wg-ampersand">Luis &amp; Verónica</div>
+      <div class="wg-tap">Toca para abrir tu invitación</div>
+    </div>
+  </div>
+
   <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
 
   <section class="hero" style="padding-top:0;max-width:100%;">
