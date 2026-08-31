@@ -26,6 +26,42 @@ def render_public_page() -> str:
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
+  <div id="welcomeGate" aria-live="polite">
+    <div class="welcome-envelope-wrap">
+      <div class="welcome-envelope" aria-label="Sobre de invitación de boda">
+        <div class="envelope-shadow"></div>
+        <div class="envelope-back"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-letter">
+          <div class="letter-content">
+            <div class="letter-couple">LUIS &amp; VERÓNICA</div>
+            <div class="letter-subtitle">Invitan a:</div>
+            <div class="letter-guest" id="guestNameDisplay">INVITADO</div>
+          </div>
+        </div>
+      </div>
+      <div class="wg-tap">Toca para abrir tu invitación</div>
+    </div>
+  </div>
+
+  <div id="welcomeGate" aria-live="polite">
+    <div class="welcome-envelope-wrap">
+      <div class="welcome-envelope" aria-label="Sobre de invitación de boda">
+        <div class="envelope-shadow"></div>
+        <div class="envelope-back"></div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-letter">
+          <div class="letter-content">
+            <div class="letter-couple">LUIS &amp; VERÓNICA</div>
+            <div class="letter-subtitle">Invitan a:</div>
+            <div class="letter-guest" id="guestNameDisplay">INVITADO</div>
+          </div>
+        </div>
+      </div>
+      <div class="wg-tap">Toca para abrir tu invitación</div>
+    </div>
+  </div>
+
   <div class="scroll-progress" aria-hidden="true"><span id="scrollProgress"></span></div>
 
   <section class="hero" style="padding-top:0;max-width:100%;">

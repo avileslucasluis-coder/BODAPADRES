@@ -1,13 +1,25 @@
 /* ---------------- INVITACIÓN PERSONALIZADA (por link) ---------------- */
 const params = new URLSearchParams(window.location.search);
-const invitadoNombre = params.get('invitado');
+const invitadoNombre = params.get('invitado')?.trim() || '';
 
 const welcomeGate = document.getElementById('welcomeGate');
+const welcomeEnvelope = document.querySelector('.welcome-envelope');
+const guestNameDisplay = document.getElementById('guestNameDisplay');
+
+if(guestNameDisplay){
+  guestNameDisplay.textContent = invitadoNombre || 'INVITADO';
+}
+
 if(welcomeGate){
   document.body.style.overflow = 'hidden';
   welcomeGate.addEventListener('click', () => {
-    welcomeGate.classList.add('wg-hidden');
-    document.body.style.overflow = '';
+    if(welcomeEnvelope){
+      welcomeEnvelope.classList.add('open');
+    }
+    setTimeout(() => {
+      welcomeGate.classList.add('wg-hidden');
+      document.body.style.overflow = '';
+    }, 700);
     forzarReproduccion();
   }, { once:true });
 }
