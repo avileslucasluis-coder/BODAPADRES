@@ -247,6 +247,17 @@ def render_public_page() -> str:
     </div>
   </section>
 
+  <section id="obsequio">
+    <div class="gift-card reveal">
+      <div class="gift-envelope" aria-hidden="true">
+        <span></span>
+      </div>
+      <div class="eyebrow">Obsequio</div>
+      <h2 class="gift-title">En sobre cerrado</h2>
+      <p>El regalo debe venir en un sobre cerrado.</p>
+    </div>
+  </section>
+
   <section id="info">
     <div class="notice reveal">
       <div class="eyebrow" style="color:var(--burgundy);">Un aviso con cariño</div>
