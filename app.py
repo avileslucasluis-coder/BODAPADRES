@@ -414,6 +414,9 @@ class AppHandler(SimpleHTTPRequestHandler):
         self.send_header("Expires", "0")
         super().end_headers()
 
+    def translate_path(self, path: str) -> str:
+        return str((ROOT / "public" / urlparse(path).path.lstrip("/")).resolve())
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
@@ -435,8 +438,9 @@ class AppHandler(SimpleHTTPRequestHandler):
             self.wfile.write(content)
             return
 
-        static_path = (ROOT / path.lstrip("/")).resolve()
-        if static_path.exists() and ROOT in static_path.parents or static_path == ROOT:
+        static_root = (ROOT / "public").resolve()
+        static_path = (static_root / path.lstrip("/")).resolve()
+        if static_path.exists() and static_root in static_path.parents or static_path == static_root:
             try:
                 super().do_GET()
                 return

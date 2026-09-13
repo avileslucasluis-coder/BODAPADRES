@@ -413,6 +413,9 @@ class handler(SimpleHTTPRequestHandler):
         self.send_header("Expires", "0")
         super().end_headers()
 
+    def translate_path(self, path: str) -> str:
+        return str((ROOT / "public" / urlparse(path).path.lstrip("/")).resolve())
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         path = parsed.path
@@ -427,11 +430,12 @@ class handler(SimpleHTTPRequestHandler):
             return
 
         # Si la ruta apunta a un archivo estático real (css/js/images/audio), lo servimos
-        static_path = (ROOT / path.lstrip("/")).resolve()
+        static_root = (ROOT / "public").resolve()
+        static_path = (static_root / path.lstrip("/")).resolve()
         if (
             path.startswith(("/css/", "/js/", "/images/", "/audio/"))
             and static_path.exists()
-            and ROOT in static_path.parents
+          and static_root in static_path.parents
         ):
             try:
                 super().do_GET()
