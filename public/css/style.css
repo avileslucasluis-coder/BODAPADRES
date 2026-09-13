@@ -18,9 +18,9 @@
   --burgundy:#7d4b45;
   --line:rgba(75,54,47,.15);
   --shadow:0 24px 68px -28px rgba(75,54,47,.42);
-  --serif:'Cormorant Garamond', serif;
-  --script:'Pinyon Script', cursive;
-  --body:'Cormorant Garamond', serif;
+  --serif:'Manrope', sans-serif;
+  --script:'Manrope', sans-serif;
+  --body:'Manrope', sans-serif;
   --sans:'Manrope', sans-serif;
 }
 
@@ -761,6 +761,13 @@ footer{
  footer{text-align:center;padding:44px 24px 56px;color:var(--ink-soft);font-family:var(--serif);font-size:1.1rem;font-weight:700;letter-spacing:.08em;}
 
 ::selection{background:var(--gold-light);color:var(--ink);}
+
+/* Texto uniforme y legible en toda la invitación. */
+body *{
+  color:var(--ink) !important;
+  font-family:var(--sans) !important;
+  font-style:normal !important;
+}
 
 /* ============ ANIMACIÓN AL HACER SCROLL (toda la página) ============ */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.7,.3,1), transform .8s cubic-bezier(.2,.7,.3,1);}
