@@ -156,7 +156,7 @@ def render_public_page() -> str:
           <div class="tc-icon">💃</div>
           <h3>Baile</h3>
           <span class="tc-time">10:00 PM</span>
-          <p>A bailar hasta que el cuerpo aguante.</p>
+          <p>Brindis y baile.</p>
         </div>
         <div class="tc-dot"></div>
         <div class="tc-empty"></div>
@@ -168,7 +168,7 @@ def render_public_page() -> str:
           <div class="tc-icon">🍽️</div>
           <h3>Cena</h3>
           <span class="tc-time">12:00 AM</span>
-          <p>Brindis y cena de celebración.</p>
+          <p>Cena de celebración.</p>
         </div>
       </div>
     </div>
