@@ -325,7 +325,7 @@ def render_public_page() -> str:
 
         <button type="submit" class="btn" id="submitBtn" data-fs-submit-btn>Enviar confirmación</button>
       </form>
-      <div class="deadline">Por favor confirma antes del 25 de septiembre de 2026</div>
+      <div class="deadline">Por favor confirma asistencia</div>
     </div>
   </section>
 
